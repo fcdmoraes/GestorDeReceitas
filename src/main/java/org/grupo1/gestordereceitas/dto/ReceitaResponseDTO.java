@@ -9,7 +9,7 @@ public class ReceitaResponseDTO {
     private String descricao;
     private int tempoDePreparo;
     private String categoria;
-    private List<String> ingredientes;
+    private List<ReceitaIngredienteDTO> ingredientes;
 
     public Long getId() {
         return id;
@@ -51,11 +51,11 @@ public class ReceitaResponseDTO {
         this.categoria = categoria;
     }
 
-    public List<String> getIngredientes() {
+    public List<ReceitaIngredienteDTO> getIngredientes() {
         return ingredientes;
     }
 
-    public void setIngredientes(List<String> ingredientes) {
+    public void setIngredientes(List<ReceitaIngredienteDTO> ingredientes) {
         this.ingredientes = ingredientes;
     }
 }
