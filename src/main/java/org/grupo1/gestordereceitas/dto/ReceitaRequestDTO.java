@@ -8,7 +8,7 @@ public class ReceitaRequestDTO {
     private String descricao;
     private int tempoDePreparo;
     private Long categoriaID;
-    private List<IngredienteDTO> ingredientes;
+    private List<ReceitaIngredienteDTO> ingredientes;
 
     public String getNome() {
         return nome;
@@ -42,32 +42,12 @@ public class ReceitaRequestDTO {
         this.categoriaID = categoriaID;
     }
 
-    public List<IngredienteDTO> getIngredientes() {
+    public List<ReceitaIngredienteDTO> getIngredientes() {
         return ingredientes;
     }
 
-    public void setIngredientes(List<IngredienteDTO> ingredientes) {
+    public void setIngredientes(List<ReceitaIngredienteDTO> ingredientes) {
         this.ingredientes = ingredientes;
     }
 
-    public static class IngredienteDTO {
-        private String nome;
-        private String quantidade;
-
-        public String getNome() {
-            return nome;
-        }
-
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
-
-        public String getQuantidade() {
-            return quantidade;
-        }
-
-        public void setQuantidade(String quantidade) {
-            this.quantidade = quantidade;
-        }
-    }
 }
