@@ -1,19 +1,17 @@
 package org.grupo1.gestordereceitas.dto.mapper;
 
+import org.grupo1.gestordereceitas.dto.ReceitaDTO;
 import org.grupo1.gestordereceitas.dto.ReceitaIngredienteDTO;
-import org.grupo1.gestordereceitas.dto.ReceitaRequestDTO;
-import org.grupo1.gestordereceitas.dto.ReceitaResponseDTO;
-import org.grupo1.gestordereceitas.model.Categoria;
-import org.grupo1.gestordereceitas.model.Ingrediente;
 import org.grupo1.gestordereceitas.model.Receita;
-import org.grupo1.gestordereceitas.model.ReceitaIngrediente;
+import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Component
 public class ReceitaMapper {
 
-    public static Receita toEntity(ReceitaRequestDTO dto, Categoria categoria, List<Ingrediente> ingredientesDisponiveis) {
+/*    public static Receita toEntity(ReceitaRequestDTO dto, Categoria categoria, List<Ingrediente> ingredientesDisponiveis) {
         Receita receita = new Receita();
         receita.setNome(dto.getNome());
         receita.setDescricao(dto.getDescricao());
@@ -42,10 +40,10 @@ public class ReceitaMapper {
             receita.setReceitaIngredientes(receitaIngredientes);
         }
         return receita;
-    }
+    }*/
 
-    public static ReceitaResponseDTO toDTO(Receita receita) {
-        ReceitaResponseDTO dto = new ReceitaResponseDTO();
+    public static ReceitaDTO toDTO(Receita receita) {
+        ReceitaDTO dto = new ReceitaDTO();
         dto.setId(receita.getId());
         dto.setNome(receita.getNome());
         dto.setDescricao(receita.getDescricao());
@@ -53,21 +51,28 @@ public class ReceitaMapper {
         dto.setCategoria(receita.getCategoria() != null ? receita.getCategoria().getNome() : null);
 
         if (receita.getReceitaIngredientes() != null) {
-            dto.setIngredientes(receita.getReceitaIngredientes().stream()
+            List<ReceitaIngredienteDTO> ingredientes = receita.getReceitaIngredientes().stream()
+                    .filter(ri -> ri != null && ri.getIngrediente() != null)
                     .map(ri -> {
-                        ReceitaIngredienteDTO dtoRI = new ReceitaIngredienteDTO();
-                        dtoRI.setIngredienteNome(ri.getIngrediente().getNome());
-                        dtoRI.setQuantidade(ri.getQuantidade());
-                        return dtoRI;
+                        ReceitaIngredienteDTO ingDTO = new ReceitaIngredienteDTO();
+                        ingDTO.setNome(ri.getIngrediente().getNome());
+                        ingDTO.setQuantidade(ri.getQuantidade() != null ? ri.getQuantidade() : "");
+                        ingDTO.setUnidade(ri.getUnidadeMedida() != null ? ri.getUnidadeMedida() : "");
+                        return ingDTO;
                     })
-                    .collect(Collectors.toList()));
+                    .toList();
+
+            dto.setIngredientes(ingredientes);
+        } else {
+            dto.setIngredientes(Collections.emptyList());
         }
+
         return dto;
     }
+}
 
-    public static List<ReceitaResponseDTO> toDTOList(List<Receita> receitas) {
+/*    public static List<ReceitaDTO> toDTOList(List<Receita> receitas) {
         return receitas.stream()
                 .map(ReceitaMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-}
+    }*/

@@ -49,7 +49,7 @@ VALUES (2, 6, 'a gosto', 'sem unidade');
 INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade, unidade_medida)
 VALUES (3, 11, '1', 'caixa');
 INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade, unidade_medida)
-VALUES (3, 12, '7', 'colher(res) de  sopa');
+VALUES (3, 12, '7', 'colher(res) de sopa');
 INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade, unidade_medida)
 VALUES (3, 13, '1', 'colher(res) de sopa');
 INSERT INTO receita_ingrediente (receita_id, ingrediente_id, quantidade, unidade_medida)
