@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReceitaIngredienteDTO {
+public class CategoriaDTO {
+    private Long id;
     private String nome;
-    private String quantidade;
-    private String unidade;
 }
