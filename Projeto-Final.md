@@ -1,130 +1,47 @@
+# 🧪 Projeto Final — API REST com Spring Boot
 
-# 🧪 Projeto Final
+## 📘 Descrição
 
-  
+Este projeto tem como objetivo a construção de uma **API REST utilizando o framework Spring Boot**.  
+A aplicação permite o **cadastro, listagem, atualização e exclusão** de registros em uma base de dados, implementando as operações básicas de um CRUD completo.
 
-## 📌 Descrição
-
-  
-
-Este projeto tem como objetivo a construção de uma **API REST utilizando o framework Spring Boot**. A aplicação deve permitir o cadastro e manutenção de registros em uma base de dados, implementando as operações básicas de um CRUD completo.
-
-  
-
-> 📌 **Tema livre:** Os alunos poderão escolher o domínio da aplicação (ex: cadastro de filmes, produtos, alunos, livros, etc).
-
+> 📌 **Tema:** Sistema de gerenciamento de receitas culinárias  
+> O projeto permite cadastrar **receitas**, **categorias** e **ingredientes**, possibilitando o relacionamento entre eles.
 
 ---
 
-  
+## 🔗 Endpoints
 
-## 🔗 Endpoints Obrigatórios
-
-  
-
-A API deve conter os seguintes endpoints para pelo menos **uma entidade principal**:
-
-  
+A API contém os seguintes endpoints principais:
 
 | Método | Rota | Descrição |
-
 |--------|---------------------------|-------------------------------------------|
+| `GET` | `/receitas` | Retorna todas as receitas |
+| `GET` | `/receitas/{id}` | Retorna uma receita pelo ID |
+| `POST` | `/receitas` | Cadastra uma nova receita |
+| `PUT` | `/receitas/{id}` | Atualiza completamente uma receita |
+| `PATCH` | `/receitas/{id}` | Atualiza parcialmente uma receita |
+| `DELETE` | `/receitas/{id}` | Exclui uma receita |
 
-| GET | `/{entidade}` | Retorna todos os registros |
-
-| GET | `/{entidade}/{id}` | Retorna um registro por ID |
-
-| POST | `/{entidade}` | Cria um novo registro |
-
-| PUT | `/{entidade}/{id}` | Atualiza **completamente** um registro |
-
-| DELETE| `/{entidade}/{id}` | Deleta um registro |
-
-| PATCH | `/{entidade}/{id}` | Atualiza **parcialmente** um registro |
-  
-
-> ⚠️ Substitua `{entidade}` pelo nome do recurso escolhido no projeto (ex: `livros`, `produtos`, etc).
-
-  
+> ⚠️ Endpoints semelhantes foram criados para **categorias** e **ingredientes**.
 
 ---
 
-  
+## 💾 Tecnologias Utilizadas
 
-## 💾 Requisitos Técnicos
-
-  
-
-- ✅ **Persistência em banco de dados**
-
-- Banco sugerido: **H2** (em memória) ou **PostgreSQL**
-
-  
-
-- ✅ **Framework**: Spring Boot
-
-  
+- ☕ **Java 17+**
+- 🌱 **Spring Boot**
+- 🧱 **Spring Data JPA**
+- 🗄️ **H2 Database** (banco em memória)
+- 📜 **Swagger UI** (documentação dos endpoints)
+- 🔐 **Spring Security** (opcional — pode ser desativado)
 
 ---
 
-  
+## ⚙️ Como Executar o Projeto
 
-## ⚙️ Requisitos Opcionais
+### 🧩 Pré-requisitos
+- Java 17+ instalado
+- Maven configurado
+- IDE de sua preferência (IntelliJ, Eclipse, VS Code etc.)
 
-  
-
-Você pode incrementar seu projeto com funcionalidades adicionais. Escolha conforme a capacidade do grupo:
-
-  
-
-- 🔄 Consumo de uma **API pública externa**
-
-- ✨ Funcionalidade extra relacionada ao tema (ex: relatório, filtro por categoria, exportação, etc)
-
-- 🔐 Autenticação básica (Basic Auth)
-
-- 📃 Integração com **Swagger/OpenAPI** para documentação
-
-- 💻 Frontend simples (em qualquer tecnologia)
-
-  
-
----
-
-  
-
-## 📁 Entregáveis
-
-  
-
-- 👥 Projeto em grupo: **4 integrantes**
-
-- 📦 Entrega:
-
-- Repositório no **GitHub**
-
-- OU arquivo **.zip** enviado via plataforma LMS
-
-  
-
-> ✅ **Inclua um README.md no repositório explicando o tema do projeto, instruções de execução e os integrantes do grupo.**
-
-  
-
----
-
-  
-
-## ✅ Checklist de Avaliação
-
-  
-
-- [ ] Funcionalidade dos endpoints
-
-- [ ] Conexão com banco de dados
-
-- [ ] Código limpo e estruturado
-
-- [ ] Uso adequado de boas práticas REST
-
-- [ ] Funcionalidades extras (se aplicável)
