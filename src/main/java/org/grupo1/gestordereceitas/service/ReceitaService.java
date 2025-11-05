@@ -32,8 +32,8 @@ public class ReceitaService {
 
     public ReceitaResponseDTO criarReceita(ReceitaRequestDTO dto) {
         // Busca categoria
-        Categoria categoria = categoriaRepository.findById(dto.getCategoriaID())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada: " + dto.getCategoriaID()));
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada: " + dto.getCategoriaId()));
 
         // Busca todos os ingredientes do banco
         List<Ingrediente> ingredientesDisponiveis = ingredienteRepository.findAll();
@@ -62,8 +62,8 @@ public class ReceitaService {
 
     // Criar receita
     public ReceitaResponseDTO salvar(ReceitaRequestDTO dto) {
-        Categoria categoria = categoriaRepository.findById(dto.getCategoriaID())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaID() + " não encontrada"));
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaId() + " não encontrada"));
 
         List<Ingrediente> ingredientes = ingredienteRepository.findAll();
         if (ingredientes.isEmpty()) {
@@ -80,8 +80,8 @@ public class ReceitaService {
         Receita receitaExistente = receitaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Receita com ID " + id + " não encontrada"));
 
-        Categoria categoria = categoriaRepository.findById(dto.getCategoriaID())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaID() + " não encontrada"));
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaId() + " não encontrada"));
 
         List<Ingrediente> ingredientes = ingredienteRepository.findAll();
         Receita receitaAtualizada = ReceitaMapper.toEntity(dto, categoria, ingredientes);
@@ -100,9 +100,9 @@ public class ReceitaService {
         if (dto.getDescricao() != null) receita.setDescricao(dto.getDescricao());
         if (dto.getTempoDePreparo() > 0) receita.setTempoDePreparo(dto.getTempoDePreparo());
 
-        if (dto.getCategoriaID() != null) {
-            Categoria categoria = categoriaRepository.findById(dto.getCategoriaID())
-                    .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaID() + " não encontrada"));
+        if (dto.getCategoriaId() != null) {
+            Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria com ID " + dto.getCategoriaId() + " não encontrada"));
             receita.setCategoria(categoria);
         }
 

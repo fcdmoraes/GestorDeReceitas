@@ -7,11 +7,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ReceitaDTO {
-    private Long id;
+public class ReceitaRequestDTO {
     private String nome;
     private String descricao;
     private int tempoDePreparo;
-    private String categoria;
+    private Long categoriaId;
     private List<ReceitaIngredienteDTO> ingredientes;
 }
