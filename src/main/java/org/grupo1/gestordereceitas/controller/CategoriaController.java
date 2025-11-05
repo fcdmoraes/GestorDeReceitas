@@ -1,49 +1,42 @@
 package org.grupo1.gestordereceitas.controller;
 
-
-import org.grupo1.gestordereceitas.dto.CategoriaDTO;
-import org.grupo1.gestordereceitas.dto.mapper.CategoriaMapper;
 import org.grupo1.gestordereceitas.model.Categoria;
-import org.grupo1.gestordereceitas.repository.CategoriaRepository;
-import org.springframework.http.HttpStatus;
+import org.grupo1.gestordereceitas.service.CategoriaService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaController {
+    private final CategoriaService categoriaService;
 
-    private final CategoriaRepository categoriaRepository;
-
-    public CategoriaController(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
+    public CategoriaController(CategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
     }
 
     @GetMapping
-    public List<CategoriaDTO> getCategorias() {
-        return categoriaRepository.findAll()
-                .stream()
-                .map(CategoriaMapper::toDTO)
-                .toList();
+    public List<Categoria> listarTodas() {
+        return categoriaService.listarTodas();
     }
 
     @GetMapping("/{id}")
-    public CategoriaDTO getCategoriaById(@PathVariable Long id) {
-        Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Categoria não encontrada"
-                ));
-        return CategoriaMapper.toDTO(categoria);
+    public Categoria buscarPorId(@PathVariable Long id) {
+        return categoriaService.buscarPorId(id);
+    }
+
+    @PostMapping
+    public Categoria criarCategoria(@RequestBody Categoria categoria) {
+        return categoriaService.salvar(categoria);
+    }
+
+    @PutMapping("/{id}")
+    public Categoria atualizarCategoria(@PathVariable Long id, @RequestBody Categoria categoria) {
+        return categoriaService.atualizar(id, categoria);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategoriaById(@PathVariable Long id) {
-        Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Categoria não encontrada"
-                ));
-        categoriaRepository.delete(categoria);
+    public void deletarCategoria(@PathVariable Long id) {
+        categoriaService.deletar(id);
     }
 }

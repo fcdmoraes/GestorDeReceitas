@@ -1,12 +1,9 @@
 package org.grupo1.gestordereceitas.controller;
 
+import org.grupo1.gestordereceitas.dto.ReceitaRequestDTO;
 import org.grupo1.gestordereceitas.dto.ReceitaResponseDTO;
-import org.grupo1.gestordereceitas.dto.mapper.ReceitaMapper;
-import org.grupo1.gestordereceitas.model.Receita;
-import org.grupo1.gestordereceitas.repository.ReceitaRepository;
-import org.springframework.http.HttpStatus;
+import org.grupo1.gestordereceitas.service.ReceitaService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -14,35 +11,39 @@ import java.util.List;
 @RequestMapping("/receitas")
 public class ReceitaController {
 
-    private final ReceitaRepository receitaRepository;
+    private final ReceitaService receitaService;
 
-    public ReceitaController(ReceitaRepository receitaRepository) {
-        this.receitaRepository = receitaRepository;
+    public ReceitaController(ReceitaService receitaService) {
+        this.receitaService = receitaService;
     }
 
     @GetMapping
-    public List<ReceitaResponseDTO> getReceitas() {
-        return receitaRepository.findAll()
-                .stream()
-                .map(ReceitaMapper::toDTO)
-                .toList();
+    public List<ReceitaResponseDTO> listarTodas() {
+        return receitaService.listarTodas();
     }
 
     @GetMapping("/{id}")
-    public ReceitaResponseDTO getReceitaById(@PathVariable Long id) {
-        Receita receita = receitaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Receita não encontrada"
-                ));
-        return ReceitaMapper.toDTO(receita);
+    public ReceitaResponseDTO buscarPorId(@PathVariable Long id) {
+        return receitaService.buscarPorId(id);
+    }
+
+    @PostMapping
+    public ReceitaResponseDTO criarReceita(@RequestBody ReceitaRequestDTO dto) {
+        return receitaService.salvar(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ReceitaResponseDTO atualizarReceita(@PathVariable Long id, @RequestBody ReceitaRequestDTO dto) {
+        return receitaService.atualizar(id, dto);
+    }
+
+    @PatchMapping("/{id}")
+    public ReceitaResponseDTO atualizarParcialReceita(@PathVariable Long id, @RequestBody ReceitaRequestDTO dto) {
+        return receitaService.atualizarParcial(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReceitaById(@PathVariable Long id) {
-        Receita receita = receitaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Receita não encontrada"
-                ));
-        receitaRepository.delete(receita);
+    public void deletarReceita(@PathVariable Long id) {
+        receitaService.deletar(id);
     }
 }
