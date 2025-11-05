@@ -1,6 +1,6 @@
 package org.grupo1.gestordereceitas.controller;
 
-import org.grupo1.gestordereceitas.dto.ReceitaDTO;
+import org.grupo1.gestordereceitas.dto.ReceitaResponseDTO;
 import org.grupo1.gestordereceitas.dto.mapper.ReceitaMapper;
 import org.grupo1.gestordereceitas.model.Receita;
 import org.grupo1.gestordereceitas.repository.ReceitaRepository;
@@ -21,7 +21,7 @@ public class ReceitaController {
     }
 
     @GetMapping
-    public List<ReceitaDTO> getReceitas() {
+    public List<ReceitaResponseDTO> getReceitas() {
         return receitaRepository.findAll()
                 .stream()
                 .map(ReceitaMapper::toDTO)
@@ -29,7 +29,7 @@ public class ReceitaController {
     }
 
     @GetMapping("/{id}")
-    public ReceitaDTO getReceitaById(@PathVariable Long id) {
+    public ReceitaResponseDTO getReceitaById(@PathVariable Long id) {
         Receita receita = receitaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Receita não encontrada"
