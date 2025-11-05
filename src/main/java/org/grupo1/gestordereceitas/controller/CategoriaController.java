@@ -1,6 +1,5 @@
 package org.grupo1.gestordereceitas.controller;
 
-
 import org.grupo1.gestordereceitas.dto.CategoriaDTO;
 import org.grupo1.gestordereceitas.dto.mapper.CategoriaMapper;
 import org.grupo1.gestordereceitas.model.Categoria;
