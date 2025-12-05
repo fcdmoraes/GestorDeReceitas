@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.grupo1.gestordereceitas.dto.ReceitaRequestDTO;
 import org.grupo1.gestordereceitas.dto.ReceitaResponseDTO;
 import org.grupo1.gestordereceitas.service.ReceitaService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class ReceitaController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da receita")
     })
     @PostMapping
-    public ReceitaResponseDTO criarReceita(@RequestBody ReceitaRequestDTO dto) {
+    public ReceitaResponseDTO criarReceita(@Validated(ReceitaRequestDTO.OnCreate.class) @RequestBody ReceitaRequestDTO dto) {
         return receitaService.salvar(dto);
     }
 
@@ -69,7 +70,7 @@ public class ReceitaController {
             @ApiResponse(responseCode = "404", description = "Receita não encontrada")
     })
     @PutMapping("/{id}")
-    public ReceitaResponseDTO atualizarReceita(@PathVariable Long id, @RequestBody ReceitaRequestDTO dto) {
+    public ReceitaResponseDTO atualizarReceita(@PathVariable Long id, @Validated(ReceitaRequestDTO.OnUpdate.class) @RequestBody ReceitaRequestDTO dto) {
         return receitaService.atualizar(id, dto);
     }
 
@@ -82,7 +83,7 @@ public class ReceitaController {
             @ApiResponse(responseCode = "404", description = "Receita não encontrada")
     })
     @PatchMapping("/{id}")
-    public ReceitaResponseDTO atualizarParcialReceita(@PathVariable Long id, @RequestBody ReceitaRequestDTO dto) {
+    public ReceitaResponseDTO atualizarParcialReceita(@PathVariable Long id, @Validated(ReceitaRequestDTO.OnPartialUpdate.class) @RequestBody ReceitaRequestDTO dto) {
         return receitaService.atualizarParcial(id, dto);
     }
 
@@ -99,3 +100,5 @@ public class ReceitaController {
         receitaService.deletar(id);
     }
 }
+
+

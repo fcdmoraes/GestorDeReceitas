@@ -47,6 +47,8 @@ public class ReceitaMapper {
                     .toList();
 
             receita.setReceitaIngredientes(receitaIngredientes);
+        } else {
+            receita.setReceitaIngredientes(null);
         }
 
         return receita;

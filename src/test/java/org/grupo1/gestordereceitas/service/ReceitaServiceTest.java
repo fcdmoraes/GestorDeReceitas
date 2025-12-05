@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,13 +79,13 @@ public class ReceitaServiceTest {
         ingredienteDTO.setIngredienteId(1L);
         ingredienteDTO.setQuantidade("1");
         ingredienteDTO.setUnidade("xícara");
-        requestDTO.setIngredientes(Arrays.asList(ingredienteDTO));
+        requestDTO.setIngredientes(Collections.singletonList(ingredienteDTO));
     }
 
     @Test
     void listarTodas_DeveRetornarListaDeReceitas() {
         // Arrange
-        List<Receita> receitas = Arrays.asList(receita);
+        List<Receita> receitas = Collections.singletonList(receita);
         when(receitaRepository.findAll()).thenReturn(receitas);
 
         // Act
@@ -94,7 +94,8 @@ public class ReceitaServiceTest {
         // Assert
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals("Pudim", resultado.get(0).getNome());
+        assertEquals("Pudim", resultado.getFirst().getNome());
+        assertEquals("Sobremesas", resultado.getFirst().getCategoria());
         verify(receitaRepository).findAll();
     }
 
@@ -119,17 +120,46 @@ public class ReceitaServiceTest {
         when(receitaRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            receitaService.buscarPorId(1L);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.buscarPorId(1L));
         verify(receitaRepository).findById(1L);
+    }
+
+    @Test
+    void criarReceita_QuandoDadosValidos_DeveRetornarReceitaCriada() {
+        // Arrange
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(ingredienteRepository.findAll()).thenReturn(Collections.singletonList(ingrediente));
+        when(receitaRepository.save(any(Receita.class))).thenReturn(receita);
+
+        // Act: No longer mocking mapper - using real mapping
+        ReceitaResponseDTO resultado = receitaService.criarReceita(requestDTO);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals("Pudim", resultado.getNome());
+        assertEquals("Sobremesas", resultado.getCategoria());
+        assertEquals("Pudim de leite condensado", resultado.getDescricao());
+        verify(categoriaRepository).findById(1L);
+        verify(ingredienteRepository).findAll();
+        verify(receitaRepository).save(any(Receita.class));
+    }
+
+    @Test
+    void criarReceita_QuandoCategoriaNaoExiste_DeveLancarException() {
+        // Arrange
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.criarReceita(requestDTO));
+        verify(categoriaRepository).findById(1L);
+        verify(receitaRepository, never()).save(any(Receita.class));
     }
 
     @Test
     void salvar_QuandoDadosValidos_DeveRetornarReceitaSalva() {
         // Arrange
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
-        when(ingredienteRepository.findAll()).thenReturn(Arrays.asList(ingrediente));
+        when(ingredienteRepository.findAll()).thenReturn(Collections.singletonList(ingrediente));
         when(receitaRepository.save(any(Receita.class))).thenReturn(receita);
 
         // Act
@@ -145,14 +175,25 @@ public class ReceitaServiceTest {
     }
 
     @Test
+    void salvar_QuandoNaoHaIngredientes_DeveLancarBusinessException() {
+        // Arrange
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(ingredienteRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        assertThrows(BusinessException.class, () -> receitaService.salvar(requestDTO));
+        verify(categoriaRepository).findById(1L);
+        verify(ingredienteRepository).findAll();
+        verify(receitaRepository, never()).save(any(Receita.class));
+    }
+
+    @Test
     void salvar_QuandoCategoriaNaoExiste_DeveLancarException() {
         // Arrange
         when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            receitaService.salvar(requestDTO);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.salvar(requestDTO));
         verify(categoriaRepository).findById(1L);
         verify(receitaRepository, never()).save(any(Receita.class));
     }
@@ -162,7 +203,7 @@ public class ReceitaServiceTest {
         // Arrange
         when(receitaRepository.findById(1L)).thenReturn(Optional.of(receita));
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
-        when(ingredienteRepository.findAll()).thenReturn(Arrays.asList(ingrediente));
+        when(ingredienteRepository.findAll()).thenReturn(Collections.singletonList(ingrediente));
         when(receitaRepository.save(any(Receita.class))).thenReturn(receita);
 
         // Act
@@ -174,6 +215,30 @@ public class ReceitaServiceTest {
         verify(receitaRepository).findById(1L);
         verify(categoriaRepository).findById(1L);
         verify(receitaRepository).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizar_QuandoReceitaNaoExiste_DeveLancarException() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.atualizar(1L, requestDTO));
+        verify(receitaRepository).findById(1L);
+        verify(receitaRepository, never()).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizar_QuandoCategoriaNaoExiste_DeveLancarException() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.of(receita));
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.atualizar(1L, requestDTO));
+        verify(receitaRepository).findById(1L);
+        verify(categoriaRepository).findById(1L);
+        verify(receitaRepository, never()).save(any(Receita.class));
     }
 
     @Test
@@ -190,6 +255,76 @@ public class ReceitaServiceTest {
 
         // Assert
         assertNotNull(resultado);
+        verify(receitaRepository).findById(1L);
+        verify(receitaRepository).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizarParcial_QuandoReceitaNaoExiste_DeveLancarException() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.atualizarParcial(1L, requestDTO));
+        verify(receitaRepository).findById(1L);
+        verify(receitaRepository, never()).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizarParcial_QuandoCategoriaInformadaNaoExiste_DeveLancarException() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.of(receita));
+        ReceitaRequestDTO atualizacaoParcial = new ReceitaRequestDTO();
+        atualizacaoParcial.setCategoriaId(99L);
+        when(categoriaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.atualizarParcial(1L, atualizacaoParcial));
+        verify(receitaRepository).findById(1L);
+        verify(categoriaRepository).findById(99L);
+        verify(receitaRepository, never()).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizarParcial_QuandoIngredientesFornecidos_DeveSubstituirIngredientes() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.of(receita));
+        when(ingredienteRepository.findAll()).thenReturn(Collections.singletonList(ingrediente));
+        when(receitaRepository.save(any(Receita.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReceitaRequestDTO atualizacaoParcial = new ReceitaRequestDTO();
+        ReceitaIngredienteDTO ingDto = new ReceitaIngredienteDTO();
+        ingDto.setIngredienteId(1L);
+        ingDto.setQuantidade("2");
+        ingDto.setUnidade("colher");
+        atualizacaoParcial.setIngredientes(Collections.singletonList(ingDto));
+
+        // Act
+        ReceitaResponseDTO resultado = receitaService.atualizarParcial(1L, atualizacaoParcial);
+
+        // Assert
+        assertNotNull(resultado);
+        assertNotNull(resultado.getIngredientes());
+        assertFalse(resultado.getIngredientes().isEmpty());
+        verify(ingredienteRepository).findAll();
+        verify(receitaRepository).save(any(Receita.class));
+    }
+
+    @Test
+    void atualizarParcial_QuandoTempoZero_DeveIgnorarAtualizacaoDeTempo() {
+        // Arrange
+        when(receitaRepository.findById(1L)).thenReturn(Optional.of(receita));
+        when(receitaRepository.save(any(Receita.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReceitaRequestDTO atualizacaoParcial = new ReceitaRequestDTO();
+        atualizacaoParcial.setTempoDePreparo(0); // should be ignored
+
+        // Act
+        ReceitaResponseDTO resultado = receitaService.atualizarParcial(1L, atualizacaoParcial);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(60, resultado.getTempoDePreparo());
         verify(receitaRepository).findById(1L);
         verify(receitaRepository).save(any(Receita.class));
     }
@@ -214,9 +349,7 @@ public class ReceitaServiceTest {
         when(receitaRepository.existsById(1L)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            receitaService.deletar(1L);
-        });
+        assertThrows(ResourceNotFoundException.class, () -> receitaService.deletar(1L));
         verify(receitaRepository).existsById(1L);
         verify(receitaRepository, never()).deleteById(1L);
     }

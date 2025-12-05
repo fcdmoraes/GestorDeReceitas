@@ -1,18 +1,19 @@
 package org.grupo1.gestordereceitas.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.grupo1.gestordereceitas.config.SecurityConfig;
-import org.grupo1.gestordereceitas.dto.ReceitaIngredienteDTO;
 import org.grupo1.gestordereceitas.dto.ReceitaRequestDTO;
 import org.grupo1.gestordereceitas.dto.ReceitaResponseDTO;
 import org.grupo1.gestordereceitas.service.ReceitaService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,18 +26,29 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ReceitaController.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class ReceitaControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private ReceitaService receitaService;
 
-    @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setup() {
+        objectMapper = new ObjectMapper();
+        ReceitaController controller = new ReceitaController(receitaService);
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        validator.setValidationMessageSource(messageSource);
+        validator.afterPropertiesSet();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).setValidator(validator).build();
+    }
+
+    // ...existing code...
 
     @Test
     public void listarTodas_DeveRetornarListaDeReceitas() throws Exception {
@@ -123,6 +135,19 @@ public class ReceitaControllerTest {
     }
 
     @Test
+    public void criarReceita_QuandoFaltaCampoObrigatorio_RetornaBadRequest() throws Exception {
+        // Arrange: missing nome and categoriaId
+        ReceitaRequestDTO receitaRequest = new ReceitaRequestDTO();
+        receitaRequest.setDescricao("Descrição sem nome");
+
+        // Act & Assert
+        mockMvc.perform(post("/receitas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(receitaRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void atualizarReceita_QuandoDadosValidos_DeveAtualizarERetornarReceita() throws Exception {
         // Arrange
         ReceitaRequestDTO receitaRequest = new ReceitaRequestDTO();
@@ -153,10 +178,24 @@ public class ReceitaControllerTest {
     }
 
     @Test
+    public void atualizarReceita_QuandoFaltaCampoObrigatorio_RetornaBadRequest() throws Exception {
+        // Arrange: missing nome and categoriaId
+        ReceitaRequestDTO receitaRequest = new ReceitaRequestDTO();
+        receitaRequest.setDescricao("Descrição sem nome");
+
+        // Act & Assert
+        mockMvc.perform(put("/receitas/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(receitaRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void atualizarParcialReceita_QuandoDadosValidos_DeveAtualizarERetornarReceita() throws Exception {
         // Arrange
         ReceitaRequestDTO receitaRequest = new ReceitaRequestDTO();
         receitaRequest.setNome("Nome Atualizado");
+        // PATCH allows partial updates, so categoriaId is optional
 
         ReceitaResponseDTO receitaResponse = new ReceitaResponseDTO();
         receitaResponse.setId(1L);
